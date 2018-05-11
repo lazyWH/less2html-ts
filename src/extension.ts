@@ -9,10 +9,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "less2html" is now active!');
+    // console.log('Congratulations, your extension "less2html" is now active!');
     let previewUri = vscode.Uri.parse("less2html://HTML/html.HTML");
-    class TextDocumentContentProvider
-        implements vscode.TextDocumentContentProvider {
+    class TextDocumentContentProvider implements vscode.TextDocumentContentProvider {
         private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
         public provideTextDocumentContent(uri: vscode.Uri): string {
             // let editor = vscode.window.activeTextEditor;
@@ -75,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
              
             }
-            console.log('filterArr',testArr);
+            // console.log('filterArr',testArr);
             
         
         
