@@ -3,25 +3,21 @@
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+less2html can help you generate HTML from less .
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
+![less2html.gif](src/images/less2html.gif)
 
 
 
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
 
-For example:
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `less2html.className`: default 'class';
+* `less2html.nodeName`: default 'div';
 
 
 -----------------------------------------------------------------------------------------------------------

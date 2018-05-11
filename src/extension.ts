@@ -30,6 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
                 let result;
                 let HTML = '';
+                console.log(result)
                 try {
                     result = this.convertToTree(selectionLessText);
                     if(result.child.length===1){
