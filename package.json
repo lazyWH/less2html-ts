@@ -4,6 +4,10 @@
     "description": "generate html from less",
     "version": "0.0.1",
     "publisher": "wanhuan",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lazyWH/less2html-ts"
+    },
     "engines": {
         "vscode": "^1.23.0"
     },

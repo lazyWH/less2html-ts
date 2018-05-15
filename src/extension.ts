@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
     let previewUri = vscode.Uri.parse("less2html://HTML/html.HTML");
     class TextDocumentContentProvider implements vscode.TextDocumentContentProvider {
         private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
+        
         public provideTextDocumentContent(uri: vscode.Uri): string {
             // let editor = vscode.window.activeTextEditor;
             // let document = editor.document;
@@ -23,14 +24,17 @@ export function activate(context: vscode.ExtensionContext) {
             let selectionLessText = this.getSelectionText();
             return this.convert(selectionLessText);
         }
+        dispose() {
+            this._onDidChange.dispose();
+        }
         convert(selectionLessText:string):string{
                 // The code you place here will be executed every time your command is executed
                 if (this.checkBracketsEqual(selectionLessText)) {
-                    vscode.window.showErrorMessage('left Brackets nums is not Equal right Brackets nums,please check selected text')
+                    // vscode.window.showErrorMessage('left Brackets nums is not Equal right Brackets nums,please check selected text');
+                    return 'left Brackets nums is not Equal right Brackets nums,please check selected text';
                 }
                 let result;
                 let HTML = '';
-                console.log(result)
                 try {
                     result = this.convertToTree(selectionLessText);
                     if(result.child.length===1){
@@ -40,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
                             HTML += this.generateHTML(result.child[i],0);
                     }
                 } catch (e) {
-                    // console.log(e);
+                    console.log(e);
                 }
                 return HTML;                
                 
@@ -75,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
              
             }
-            // console.log('filterArr',testArr);
+            console.log('filterArr',testArr);
             
         
         
@@ -115,9 +119,9 @@ export function activate(context: vscode.ExtensionContext) {
             return text.slice(1,end)
         }
         checkBracketsEqual(finalText) {
-            let leftBrackets = finalText.match(/{/g);
-            let rightBrackets = finalText.match(/}/g);
-            return leftBrackets.length !== rightBrackets.length;
+            let leftBrackets = finalText.match(/{/g)||[];
+            let rightBrackets = finalText.match(/}/g)||[];
+            return leftBrackets.length===0||leftBrackets.length !== rightBrackets.length;
         }
         getSelectionText():string {
             let editor = vscode.window.activeTextEditor;
@@ -162,7 +166,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.openTextDocument(previewUri).then(doc => vscode.window.showTextDocument(doc,vscode.ViewColumn.Two));
     });
 
-    context.subscriptions.push(disposable,registration);
+    context.subscriptions.push(provider,disposable,registration);
 }
 
 // this method is called when your extension is deactivated
