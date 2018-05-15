@@ -52,14 +52,15 @@ export function activate(context: vscode.ExtensionContext) {
         }
         convertToTree(finalSourceText) {
             //1.start with class name(.) or id(#)name ,end with { ,or less function start whit (.)，end with (\(\)){  2.less reserved word (&),end with {  3.HTML tag  name 
-            let regexp = new RegExp(/([.#][-\w:()]+(?={))|(&.*?(?={))|([a-z]+(?={))|}/, 'g');
+            let regexp = new RegExp(/([.#][-\w:()@,]+[{])|(&.*?[{])|([a-z]+[{])|}|{/, 'g');
             // let regexp = new RegExp(/([.#].*?(?={))|(&.*?(?={))|([a-z]+(?={))|}/, 'g');
             let arr,stack = [],testArr = [];
-            let root = {type:'id',value:'root',nodeName:'div',child:[]};
-            stack.push(root);
             const config = vscode.workspace.getConfiguration('less2html');
             const nodeName = config.get('nodeName')
             const className = config.get('className')
+            let root = {type:'id',value:'root',nodeName:nodeName,child:[]};
+            stack.push(root);
+            
             while ((arr = regexp.exec(finalSourceText)) !== null) {
                 //  console.log(`Found ${arr[0]}. Next starts at ${regexp.lastIndex}.`);
                 let text = arr[0];
@@ -69,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
                     node.type = this.getType(text,className);
                     node.value = this.getValue(text);
                     node.nodeName = node.type==='tag'?text:nodeName
-                    testArr.push(`${text},type:${node.nodeName}`)
+                    testArr.push(`${text},type:${node.type},nodeName:${node.nodeName}`)
                     
                     stack.push(node);
                 }else{
@@ -80,8 +81,9 @@ export function activate(context: vscode.ExtensionContext) {
              
             }
             console.log('filterArr',testArr);
+
+            this.filter(root.child);
             
-        
         
             return root;
         }
@@ -96,26 +98,30 @@ export function activate(context: vscode.ExtensionContext) {
         }
         getType(text,className){
             let type ;
-            if(text[0] ==='.'){
-                if(/\(\)/.test(text)){
-                    type = 'function'
-                }else{
-                    type = className
-                }
-            }else if( text[0] ==='#'){
-                type = 'id'
-            }else if(text[0] ==='&'){
-                type = 'reverse'
-            }else{
-                type = 'tag'
+            switch (text[0]) {
+                case '.':
+                    if (/\(.*\)/.test(text)) {
+                        type = 'function'
+                    } else {
+                        type = className
+                    }; break;
+                case '#': type = 'id';break;
+                case '&': type = 'reverse';break;
+                case '{': type = className;break;
+                default: type = 'tag';
             }
             return type;
         }
         getValue(text){
+            //{
+            if(text==='{') return '';
+            // a tag
             if(text.length===1) return text;
+            // class:after
             let index = text.indexOf(':');
             let end = text.length;
             if(index!==-1) end = index;
+            if(text[text.length-1]==='{' && end===text.length) end--;
             return text.slice(1,end)
         }
         checkBracketsEqual(finalText) {
@@ -139,6 +145,14 @@ export function activate(context: vscode.ExtensionContext) {
             // return  textWithoutSpace.replace(/(#\w+(?!{))|([.]\d+)/g, '');
             return  textWithoutSpace.replace(/([.]\d+)/g, '');
         
+        }
+        filter(arr) {
+            const length = arr.length;
+            for (let i = length - 1; i >= 0; i--) {
+                const { type, child } = arr[i];
+                this.filter(child);
+                if (type === 'function' || type === 'reverse') arr.splice(i, 1);
+            }
         }
         get onDidChange(): vscode.Event<vscode.Uri> {
             return this._onDidChange.event;
