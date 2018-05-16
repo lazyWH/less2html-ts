@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
                     let node = {child:[],type:'',value:'',nodeName:''}
                     node.type = this.getType(text,className);
                     node.value = this.getValue(text);
-                    node.nodeName = node.type==='tag'?text:nodeName
+                    node.nodeName = node.type==='tag'?text.slice(0,text.length-1):nodeName
                     testArr.push(`${text},type:${node.type},nodeName:${node.nodeName}`)
                     
                     stack.push(node);
