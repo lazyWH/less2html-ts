@@ -2,7 +2,7 @@
     "name": "less2html",
     "displayName": "less2html",
     "description": "generate html from less",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "wanhuan",
     "repository": {
         "type": "git",
